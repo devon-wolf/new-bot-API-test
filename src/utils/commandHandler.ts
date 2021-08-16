@@ -1,11 +1,21 @@
 import fs from 'fs';
+import { SlashCommandBuilder } from '@discordjs/builders';
 import { Collection, CommandInteraction } from 'discord.js';
-import { CommandExport, CommandObject } from '../types';
+import { CommandObject, CommandProps, CommandCollection } from '../types';
 
-export const populateCommands = (): [CommandObject[], Collection<string, CommandExport>] => {
+export const makeCommand = ({ name, description, callback }: CommandProps): CommandObject => {
+    return {
+        data: new SlashCommandBuilder()
+            .setName(name)
+            .setDescription(description),
+        execute: callback
+    };
+};
+
+export const populateCommands = (): [CommandObject[], CommandCollection] => {
     const commands: CommandObject[] = [];
 
-    const clientCommands: Collection<string, CommandExport> = new Collection();
+    const clientCommands: CommandCollection = new Collection();
     
     const commandFiles = fs
         .readdirSync(`${__dirname}/../commands`)
@@ -14,9 +24,10 @@ export const populateCommands = (): [CommandObject[], Collection<string, Command
                 file.endsWith('.ts'));
     
     for (const file of commandFiles) {
+        // TODO figure out right syntax for this
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const command = require(`${__dirname}/../commands/${file}`);
-    
+
         commands.push(command.default.data.toJSON());
     
         clientCommands.set(command.default.data.name, command);
@@ -25,7 +36,7 @@ export const populateCommands = (): [CommandObject[], Collection<string, Command
     return [commands, clientCommands];
 };
 
-export const executeCommand = async (interaction: CommandInteraction, clientCommands: Collection<string, CommandExport>): Promise<void> => {
+export const executeCommand = async (interaction: CommandInteraction, clientCommands: CommandCollection): Promise<void> => {
     const { commandName } = interaction;
     if (!clientCommands.has(commandName)) return;
 
