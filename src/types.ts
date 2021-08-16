@@ -1,14 +1,11 @@
-import { Client, Collection, CommandInteraction } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
 export interface CommandObject {
-    default: {
-        name: string;
-        description: string;
-        options: unknown[];
-        execute: (interaction: CommandInteraction) => Promise<void>;
-    }
+    data: SlashCommandBuilder;
+    execute: (interaction: CommandInteraction) => Promise<void>;
 }
 
-export type CommandClient = Client & {
-    commands: Collection<string, CommandObject>
+export interface CommandExport {
+    default: CommandObject;
 }

@@ -1,11 +1,11 @@
 import fs from 'fs';
 import { Collection, CommandInteraction } from 'discord.js';
-import { CommandObject } from '../types';
+import { CommandExport, CommandObject } from '../types';
 
-export const populateCommands = (): [CommandObject[], Collection<string, CommandObject>] => {
+export const populateCommands = (): [CommandObject[], Collection<string, CommandExport>] => {
     const commands: CommandObject[] = [];
 
-    const clientCommands: Collection<string, CommandObject> = new Collection();
+    const clientCommands: Collection<string, CommandExport> = new Collection();
     
     const commandFiles = fs
         .readdirSync(`${__dirname}/../commands`)
@@ -25,10 +25,12 @@ export const populateCommands = (): [CommandObject[], Collection<string, Command
     return [commands, clientCommands];
 };
 
-export const executeCommand = async (interaction: CommandInteraction, clientCommands: Collection<string, CommandObject>): Promise<void> => {
+export const executeCommand = async (interaction: CommandInteraction, clientCommands: Collection<string, CommandExport>): Promise<void> => {
     const { commandName } = interaction;
+    if (!clientCommands.has(commandName)) return;
+
     try {
-        const command = await clientCommands.get(commandName);
+        const command = clientCommands.get(commandName);
 
         if (command) {
             command.default.execute(interaction);

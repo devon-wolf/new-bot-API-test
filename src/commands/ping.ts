@@ -1,14 +1,9 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
+import makeCommand from '../utils/makeCommand';
 
-const ping = {
-    data: new SlashCommandBuilder()
-        .setName('ping')
-        .setDescription('replies with pong'),
+export default makeCommand(
+    'ping',
+    'replies with pong',
+    (async (interaction: CommandInteraction) => await interaction.reply('pong'))
+);
 
-    async execute(interaction: CommandInteraction): Promise<void> {
-        await interaction.reply('pong');
-    }
-};
-
-export default ping;
