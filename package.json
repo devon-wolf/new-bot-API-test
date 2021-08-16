@@ -9,11 +9,14 @@
     "start": "tsc && node -r dotenv/config dist/index.js",
     "start:dev": "nodemon  -r dotenv/config dist/index.js",
     "build:dev": "tsc --watch --preserveWatchOutput",
-    "start:watch": "concurrently \"npm:build:dev\" \"npm:start:dev\""
+    "start:watch": "concurrently \"npm:build:dev\" \"npm:start:dev\"",
+    "load-commands": "tsc && node -r dotenv/config dist/utils/slashCommands.js"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "discord-api-types": "^0.22.0",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0"
   },
