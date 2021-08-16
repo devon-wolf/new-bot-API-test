@@ -2,29 +2,13 @@ import fs from 'fs';
 import { Client, Collection, Intents } from 'discord.js';
 import { CommandObject } from './types';
 import { setApplicationCommands } from './utils/slashCommands';
+import populateCommands from './utils/commandHandler';
 
 const client = new Client({
     intents: [Intents.FLAGS.GUILDS],
 });
 
-const commands: CommandObject[] = [];
-
-const clientCommands: Collection<string, CommandObject> = new Collection();
-
-const commandFiles = fs
-    .readdirSync(`${__dirname}/commands`)
-    .filter(file =>
-        file.endsWith('.js') ||
-            file.endsWith('.ts'));
-
-for (const file of commandFiles) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const command = require(`${__dirname}/commands/${file}`);
-
-    commands.push(command.default.data.toJSON());
-
-    clientCommands.set(command.default.data.name, command);
-}
+const [commands, clientCommands] = populateCommands();
 
 client.once('ready', () => {
     setApplicationCommands(commands);
